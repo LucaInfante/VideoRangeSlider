@@ -25,7 +25,19 @@ public struct VideoRangeSliderWrapper: UIViewRepresentable {
         self._minSpace = minSpace
         self._maxSpace = maxSpace
         self._startPosition = startPosition
+        
         self._endPosition = endPosition
+
+        if let url = URL(string: localPath.wrappedValue) {
+            let asset = AVAsset(url: url)
+            let duration = asset.duration
+            let durationTime = CMTimeGetSeconds(duration)
+            if endPosition.wrappedValue == 0
+            {
+                self._endPosition = Binding.constant(Float(durationTime))
+            }
+        }
+        
         self._actualPosition = actualPosition
         self._height = height
         self._startY = startY

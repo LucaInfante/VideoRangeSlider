@@ -250,9 +250,41 @@ public class VideoRangeSlider: UIView, UIGestureRecognizerDelegate {
     internal func reSetupIndicator(height: CGFloat, startY: CGFloat)
     {
         // Re-Setup frame of start, progress and end indicator for correct use with SwiftUI
-        self.startIndicator.frame = CGRect(x: self.startIndicator.frame.origin.x, y: startY, width: self.startIndicator.frame.size.width, height: height)
-        self.progressIndicator.frame = CGRect(x: self.startIndicator.frame.origin.x, y: startY, width: self.startIndicator.frame.size.width, height: height)
-        self.endIndicator.frame = CGRect(x: self.startIndicator.frame.origin.x, y: startY, width: self.startIndicator.frame.size.width, height: height)
+        self.startIndicator.removeFromSuperview()
+        let startDrag = UIPanGestureRecognizer(target:self,
+                                               action: #selector(startDragged(recognizer:)))
+
+        self.startIndicator = ABStartIndicator(frame: CGRect(x: 0,
+                                                        y: startY,
+                                                        width: 20,
+                                                        height: height))
+        self.startIndicator.layer.anchorPoint = CGPoint(x: 1, y: 0.5)
+        self.startIndicator.addGestureRecognizer(startDrag)
+        self.addSubview(self.startIndicator)
+        
+        self.progressIndicator.removeFromSuperview()
+        let progressDrag = UIPanGestureRecognizer(target:self,
+                                                  action: #selector(progressDragged(recognizer:)))
+
+        self.progressIndicator = ABProgressIndicator(frame: CGRect(x: 0,
+                                                              y: startY,
+                                                              width: 10,
+                                                              height: height))
+        self.progressIndicator.addGestureRecognizer(progressDrag)
+        self.addSubview(self.progressIndicator)
+
+        
+        self.endIndicator.removeFromSuperview()
+        let endDrag = UIPanGestureRecognizer(target:self,
+                                             action: #selector(endDragged(recognizer:)))
+
+        self.endIndicator = ABEndIndicator(frame: CGRect(x: 0,
+                                                    y: startY,
+                                                    width: indicatorWidth,
+                                                    height: height))
+        self.endIndicator.layer.anchorPoint = CGPoint(x: 0, y: 0.5)
+        self.endIndicator.addGestureRecognizer(endDrag)
+        self.addSubview(self.endIndicator)
     }
     
     // MARK: - Private functions
