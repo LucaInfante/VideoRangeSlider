@@ -10,7 +10,7 @@ import SwiftUI
 import AVKit
 
 @available(iOS 13.0, *)
-public struct ABVideoRangeSliderWrapper: UIViewRepresentable {
+public struct VideoRangeSliderWrapper: UIViewRepresentable {
     @Binding var localPath: String
     @Binding var minSpace: Float
     @Binding var maxSpace: Float
@@ -62,17 +62,17 @@ public struct ABVideoRangeSliderWrapper: UIViewRepresentable {
         //
     }
     
-    public func makeCoordinator() -> ABVideoRangeSliderWrapper.Coordinator {
+    public func makeCoordinator() -> VideoRangeSliderWrapper.Coordinator {
         return Coordinator(self)
     }
 }
 
 @available(iOS 13.0, *)
-extension ABVideoRangeSliderWrapper {
+extension VideoRangeSliderWrapper {
     public class Coordinator: NSObject, VideoRangeSliderDelegate {
-        var parent: ABVideoRangeSliderWrapper
+        var parent: VideoRangeSliderWrapper
         
-        init(_ parent: ABVideoRangeSliderWrapper) {
+        init(_ parent: VideoRangeSliderWrapper) {
             self.parent = parent
         }
         

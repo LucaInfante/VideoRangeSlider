@@ -10,6 +10,9 @@ let package = Package(
         .library(
             name: "VideoRangeSlider",
             targets: ["VideoRangeSlider"]),
+        .library(
+            name: "VideoRangeSliderWrapper",
+            targets: ["VideoRangeSlider"]),
     ],
     dependencies: [
         // Dependencies declare other packages that this package depends on.
