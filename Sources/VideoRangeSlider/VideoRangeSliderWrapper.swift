@@ -72,7 +72,7 @@ extension ABVideoRangeSliderWrapper {
     public class Coordinator: NSObject, VideoRangeSliderDelegate {
         var parent: ABVideoRangeSliderWrapper
         
-        public init(_ parent: ABVideoRangeSliderWrapper) {
+        init(_ parent: ABVideoRangeSliderWrapper) {
             self.parent = parent
         }
         
