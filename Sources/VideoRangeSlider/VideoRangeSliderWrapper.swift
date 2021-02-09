@@ -10,7 +10,7 @@ import SwiftUI
 import AVKit
 
 @available(iOS 13.0, *)
-struct ABVideoRangeSliderWrapper: UIViewRepresentable {
+public struct ABVideoRangeSliderWrapper: UIViewRepresentable {
     @Binding var localPath: String
     @Binding var minSpace: Float
     @Binding var maxSpace: Float
@@ -20,7 +20,7 @@ struct ABVideoRangeSliderWrapper: UIViewRepresentable {
     @Binding var height: CGFloat
     @Binding var startY: CGFloat
     
-    init(localPath: Binding<String>, minSpace: Binding<Float>, maxSpace: Binding<Float>, startPosition: Binding<Float> = .constant(0), endPosition: Binding<Float> = .constant(0), actualPosition: Binding<Float> = .constant(0), height: Binding<CGFloat> = .constant(159.0), startY: Binding<CGFloat> = .constant(0)) {
+    public init(localPath: Binding<String>, minSpace: Binding<Float>, maxSpace: Binding<Float>, startPosition: Binding<Float> = .constant(0), endPosition: Binding<Float> = .constant(0), actualPosition: Binding<Float> = .constant(0), height: Binding<CGFloat> = .constant(159.0), startY: Binding<CGFloat> = .constant(0)) {
         self._localPath = localPath
         self._minSpace = minSpace
         self._maxSpace = maxSpace
@@ -31,7 +31,7 @@ struct ABVideoRangeSliderWrapper: UIViewRepresentable {
         self._startY = startY
     }
     
-    func makeUIView(context: Context) -> VideoRangeSlider {
+    public func makeUIView(context: Context) -> VideoRangeSlider {
         let videoRangeSlider: VideoRangeSlider = VideoRangeSlider()
 
         // Set the video URL
@@ -58,30 +58,30 @@ struct ABVideoRangeSliderWrapper: UIViewRepresentable {
         return videoRangeSlider
     }
 
-    func updateUIView(_ uiView: VideoRangeSlider, context: Context) {
+    public func updateUIView(_ uiView: VideoRangeSlider, context: Context) {
         //
     }
     
-    func makeCoordinator() -> ABVideoRangeSliderWrapper.Coordinator {
+    public func makeCoordinator() -> ABVideoRangeSliderWrapper.Coordinator {
         return Coordinator(self)
     }
 }
 
 @available(iOS 13.0, *)
 extension ABVideoRangeSliderWrapper {
-    class Coordinator: NSObject, VideoRangeSliderDelegate {
+    public class Coordinator: NSObject, VideoRangeSliderDelegate {
         var parent: ABVideoRangeSliderWrapper
         
-        init(_ parent: ABVideoRangeSliderWrapper) {
+        public init(_ parent: ABVideoRangeSliderWrapper) {
             self.parent = parent
         }
         
-        func indicatorDidChangePosition(videoRangeSlider: VideoRangeSlider, position: Float64) {
+        public func indicatorDidChangePosition(videoRangeSlider: VideoRangeSlider, position: Float64) {
             // Update parent var of actual position of progress indicator
             self.parent.actualPosition = Float(position)
         }
         
-        func didChangeValue(videoRangeSlider: VideoRangeSlider, startTime: Float64, endTime: Float64) {
+        public func didChangeValue(videoRangeSlider: VideoRangeSlider, startTime: Float64, endTime: Float64) {
             // Update parent var of actual position of indicator (start and end)
             self.parent.startPosition = Float(startTime)
             self.parent.endPosition = Float(endTime)
