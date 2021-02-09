@@ -75,7 +75,7 @@ public class VideoRangeSlider: UIView, UIGestureRecognizerDelegate {
         super.init(coder: aDecoder)
     }
 
-    public func setup() {
+    private func setup() {
         self.isUserInteractionEnabled = true
 
         // Setup Start Indicator
@@ -163,7 +163,6 @@ public class VideoRangeSlider: UIView, UIGestureRecognizerDelegate {
     }
 
     // MARK: Public functions
-
     public func setProgressIndicatorImage(image: UIImage){
         self.progressIndicator.imageView.image = image
     }
@@ -247,6 +246,15 @@ public class VideoRangeSlider: UIView, UIGestureRecognizerDelegate {
         layoutSubviews()
     }
 
+    // MARK: - Internal functions
+    internal func reSetupIndicator(height: CGFloat, startY: CGFloat)
+    {
+        // Re-Setup frame of start, progress and end indicator for correct use with SwiftUI
+        self.startIndicator.frame = CGRect(x: self.startIndicator.frame.origin.x, y: startY, width: self.startIndicator.frame.size.width, height: height)
+        self.progressIndicator.frame = CGRect(x: self.startIndicator.frame.origin.x, y: startY, width: self.startIndicator.frame.size.width, height: height)
+        self.endIndicator.frame = CGRect(x: self.startIndicator.frame.origin.x, y: startY, width: self.startIndicator.frame.size.width, height: height)
+    }
+    
     // MARK: - Private functions
 
     // MARK: - Crop Handle Drag Functions
