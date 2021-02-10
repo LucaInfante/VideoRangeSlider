@@ -31,6 +31,10 @@ public class VideoRangeSlider: UIView, UIGestureRecognizerDelegate {
     var progressIndicator   = ABProgressIndicator()
     var draggableView       = UIView()
 
+    // For SwiftUI
+    var viewForSwiftUI      = UIView()
+    var flagSwiftUI         = false
+
     public var startTimeView       = ABTimeView()
     public var endTimeView         = ABTimeView()
 
@@ -125,7 +129,7 @@ public class VideoRangeSlider: UIView, UIGestureRecognizerDelegate {
 
         // Setup Progress Indicator
 
-        let progressDrag = UIPanGestureRecognizer(target:self,
+        let progressDrag = UIPanGestureRecognizer(target: self,
                                                   action: #selector(progressDragged(recognizer:)))
 
         progressIndicator = ABProgressIndicator(frame: CGRect(x: 0,
@@ -137,7 +141,7 @@ public class VideoRangeSlider: UIView, UIGestureRecognizerDelegate {
 
         // Setup Draggable View
 
-        let viewDrag = UIPanGestureRecognizer(target:self,
+        let viewDrag = UIPanGestureRecognizer(target: self,
                                               action: #selector(viewDragged(recognizer:)))
 
         draggableView.addGestureRecognizer(viewDrag)
@@ -146,7 +150,7 @@ public class VideoRangeSlider: UIView, UIGestureRecognizerDelegate {
         self.sendSubviewToBack(draggableView)
 
         // Setup time labels
-
+                
         startTimeView = ABTimeView(size: CGSize(width: 60, height: 30), position: 1)
         startTimeView.layer.anchorPoint = CGPoint(x: 0.5, y: 0.5)
         self.addSubview(startTimeView)
@@ -218,19 +222,19 @@ public class VideoRangeSlider: UIView, UIGestureRecognizerDelegate {
         }
     }
 
-    public func setVideoURL(videoURL: URL){
+    public func setVideoURL(videoURL: URL) {
         self.duration = ABVideoHelper.videoDuration(videoURL: videoURL)
         self.videoURL = videoURL
         self.superview?.layoutSubviews()
         self.updateThumbnails()
     }
 
-    public func updateThumbnails(){
-        if !isUpdatingThumbnails{
+    public func updateThumbnails() {
+        if !isUpdatingThumbnails {
             self.isUpdatingThumbnails = true
             let backgroundQueue = DispatchQueue(label: "com.app.queue", qos: .background, target: nil)
             backgroundQueue.async {
-                _ = self.thumbnailsManager.updateThumbnails(view: self, videoURL: self.videoURL, duration: self.duration)
+                _ = self.thumbnailsManager.updateThumbnails(view: (self.flagSwiftUI ? self.viewForSwiftUI : self), videoURL: self.videoURL, duration: self.duration)
                 self.isUpdatingThumbnails = false
             }
         }
@@ -245,46 +249,72 @@ public class VideoRangeSlider: UIView, UIGestureRecognizerDelegate {
         self.endPercentage = self.valueFromSeconds(seconds: seconds)
         layoutSubviews()
     }
-
+    
     // MARK: - Internal functions
-    internal func reSetupIndicator(height: CGFloat, startY: CGFloat)
+    internal func reSetupIndicator(width: CGFloat, height: CGFloat, heightProgressIndicator: CGFloat, startY: CGFloat)
     {
+        // Set flag SwiftUI to true
+        self.viewForSwiftUI = UIView(frame: CGRect(x: 20, y: 0, width: width - 40, height: height))
+        self.addSubview(self.viewForSwiftUI)
+        self.flagSwiftUI = true
+        
         // Re-Setup frame of start, progress and end indicator for correct use with SwiftUI
         self.startIndicator.removeFromSuperview()
         let startDrag = UIPanGestureRecognizer(target:self,
                                                action: #selector(startDragged(recognizer:)))
 
         self.startIndicator = ABStartIndicator(frame: CGRect(x: 0,
-                                                        y: startY,
+                                                        y: startY - topBorderHeight,
                                                         width: 20,
-                                                        height: height))
-        self.startIndicator.layer.anchorPoint = CGPoint(x: 1, y: 0.5)
+                                                        height: height + topBorderHeight + bottomBorderHeight))
+        self.startIndicator.layer.anchorPoint = CGPoint(x: 0, y: 0.5)
         self.startIndicator.addGestureRecognizer(startDrag)
         self.addSubview(self.startIndicator)
+
+        self.endIndicator.removeFromSuperview()
+        let endDrag = UIPanGestureRecognizer(target:self,
+                                             action: #selector(endDragged(recognizer:)))
+
+        self.endIndicator = ABEndIndicator(frame: CGRect(x: 0,
+                                                    y: startY - topBorderHeight,
+                                                    width: indicatorWidth,
+                                                    height: height + topBorderHeight + bottomBorderHeight))
+        self.endIndicator.layer.anchorPoint = CGPoint(x: 1, y: 0.5)
+        self.endIndicator.addGestureRecognizer(endDrag)
+        self.addSubview(self.endIndicator)
         
         self.progressIndicator.removeFromSuperview()
         let progressDrag = UIPanGestureRecognizer(target:self,
                                                   action: #selector(progressDragged(recognizer:)))
 
         self.progressIndicator = ABProgressIndicator(frame: CGRect(x: 0,
-                                                              y: startY,
+                                                              y: startY - topBorderHeight - (heightProgressIndicator - height)/2,
                                                               width: 10,
-                                                              height: height))
+                                                              height: heightProgressIndicator + topBorderHeight + bottomBorderHeight))
         self.progressIndicator.addGestureRecognizer(progressDrag)
         self.addSubview(self.progressIndicator)
 
-        
-        self.endIndicator.removeFromSuperview()
-        let endDrag = UIPanGestureRecognizer(target:self,
-                                             action: #selector(endDragged(recognizer:)))
+        // Setup Draggable View
 
-        self.endIndicator = ABEndIndicator(frame: CGRect(x: 0,
-                                                    y: startY,
-                                                    width: indicatorWidth,
-                                                    height: height))
-        self.endIndicator.layer.anchorPoint = CGPoint(x: 0, y: 0.5)
-        self.endIndicator.addGestureRecognizer(endDrag)
-        self.addSubview(self.endIndicator)
+        let viewDrag = UIPanGestureRecognizer(target: self,
+                                              action: #selector(viewDragged(recognizer:)))
+
+        draggableView.addGestureRecognizer(viewDrag)
+        self.draggableView.backgroundColor = .clear
+        self.viewForSwiftUI.addSubview(draggableView)
+        self.viewForSwiftUI.sendSubviewToBack(draggableView)
+
+        // Setup time labels
+        startTimeView.removeFromSuperview()
+        startTimeView = ABTimeView(size: CGSize(width: 60, height: 30), position: 1)
+        startTimeView.layer.anchorPoint = CGPoint(x: 0.5, y: 0.5)
+        self.viewForSwiftUI.addSubview(startTimeView)
+
+        endTimeView.removeFromSuperview()
+        endTimeView = ABTimeView(size: CGSize(width: 60, height: 30), position: 1)
+        endTimeView.layer.anchorPoint = CGPoint(x: 0.5, y: 0.5)
+        self.viewForSwiftUI.addSubview(endTimeView)
+
     }
     
     // MARK: - Private functions
@@ -373,17 +403,17 @@ public class VideoRangeSlider: UIView, UIGestureRecognizerDelegate {
                 progressPosition = positionFromValue(value: self.startPercentage)
             }
         }
-        
+                
         progressIndicator.center = CGPoint(x: progressPosition , y: progressIndicator.center.y)
         let progressPercentage = progressIndicator.center.x * 100 / self.frame.width
-        
+
         if self.progressPercentage != progressPercentage {
             let progressSeconds = secondsFromValue(value: progressPercentage)
             self.delegate?.indicatorDidChangePosition(videoRangeSlider: self, position: progressSeconds)
         }
         
         self.progressPercentage = progressPercentage
-        
+                
         layoutSubviews()
     }
     
@@ -396,8 +426,8 @@ public class VideoRangeSlider: UIView, UIGestureRecognizerDelegate {
         
         let translation = recognizer.translation(in: self)
 
-        let positionLimitStart  = positionFromValue(value: self.startPercentage)
-        let positionLimitEnd    = positionFromValue(value: self.endPercentage)
+        let positionLimitStart  = positionFromValue(value: self.startPercentage) + (self.flagSwiftUI ? 20 : 0)
+        let positionLimitEnd    = positionFromValue(value: self.endPercentage) - (self.flagSwiftUI ? 20 : 0)
 
         var position = positionFromValue(value: self.progressPercentage)
         position = position + translation.x
@@ -444,7 +474,7 @@ public class VideoRangeSlider: UIView, UIGestureRecognizerDelegate {
             progressPosition = progressPosition - translation.x
         }
 
-        if endPosition > self.frame.size.width{
+        if endPosition > self.frame.size.width {
             endPosition = self.frame.size.width
             startPosition = startPosition - translation.x
             progressPosition = progressPosition - translation.x
@@ -519,11 +549,23 @@ public class VideoRangeSlider: UIView, UIGestureRecognizerDelegate {
         return position
     }
     
-    private func secondsFromValue(value: CGFloat) -> Float64{
-        return duration * Float64((value / 100))
+    private func secondsFromValue(value: CGFloat) -> Float64 {
+        // Fix for SwiftUI
+        if value < 6
+        {
+            return duration * Float64((0 / 100))
+        }
+        else if value > 94
+        {
+            return duration * Float64((100 / 100))
+        }
+        else
+        {
+            return duration * Float64((value / 100))
+        }
     }
 
-    private func valueFromSeconds(seconds: Float) -> CGFloat{
+    private func valueFromSeconds(seconds: Float) -> CGFloat {
         return CGFloat(seconds * 100) / CGFloat(duration)
     }
     
@@ -564,11 +606,11 @@ public class VideoRangeSlider: UIView, UIGestureRecognizerDelegate {
         startIndicator.center = CGPoint(x: startPosition, y: startIndicator.center.y)
         endIndicator.center = CGPoint(x: endPosition, y: endIndicator.center.y)
         progressIndicator.center = CGPoint(x: progressPosition, y: progressIndicator.center.y)
+
         draggableView.frame = CGRect(x: startIndicator.frame.origin.x + startIndicator.frame.size.width,
                                      y: 0,
                                      width: endIndicator.frame.origin.x - startIndicator.frame.origin.x - endIndicator.frame.size.width,
                                      height: self.frame.height)
-
 
         topLine.frame = CGRect(x: startIndicator.frame.origin.x + startIndicator.frame.width,
                                y: -topBorderHeight,
@@ -582,9 +624,8 @@ public class VideoRangeSlider: UIView, UIGestureRecognizerDelegate {
 
         // Update time view
         startTimeView.center = CGPoint(x: startIndicator.center.x, y: startTimeView.center.y)
-        endTimeView.center = CGPoint(x: endIndicator.center.x, y: endTimeView.center.y)
+        endTimeView.center = CGPoint(x: endIndicator.frame.origin.x - endIndicator.frame.size.width, y: endTimeView.center.y)
     }
-
 
     override public func point(inside point: CGPoint, with event: UIEvent?) -> Bool {
         let extendedBounds = CGRect(x: -startIndicator.frame.size.width,
@@ -593,7 +634,6 @@ public class VideoRangeSlider: UIView, UIGestureRecognizerDelegate {
                                     height: self.frame.size.height + topLine.frame.size.height + bottomLine.frame.size.height)
         return extendedBounds.contains(point)
     }
-
 
     private func secondsToFormattedString(totalSeconds: Float64) -> String{
         let hours:Int = Int(totalSeconds.truncatingRemainder(dividingBy: 86400) / 3600)

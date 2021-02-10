@@ -1,6 +1,6 @@
 //
 //  File.swift
-//  
+//
 //
 //  Created by Luca Infante on 09/02/21.
 //
@@ -17,10 +17,12 @@ public struct VideoRangeSliderWrapper: UIViewRepresentable {
     @Binding var startPosition: Float
     @Binding var endPosition: Float
     @Binding var actualPosition: Float
+    @Binding var width: CGFloat
     @Binding var height: CGFloat
+    @Binding var heightProgressIndicator: CGFloat
     @Binding var startY: CGFloat
     
-    public init(localPath: Binding<String>, minSpace: Binding<Float>, maxSpace: Binding<Float>, startPosition: Binding<Float> = .constant(0), endPosition: Binding<Float> = .constant(0), actualPosition: Binding<Float> = .constant(0), height: Binding<CGFloat> = .constant(159.0), startY: Binding<CGFloat> = .constant(0)) {
+    public init(localPath: Binding<String>, minSpace: Binding<Float>, maxSpace: Binding<Float>, startPosition: Binding<Float> = .constant(0), endPosition: Binding<Float> = .constant(0), actualPosition: Binding<Float> = .constant(-1), width: Binding<CGFloat>, height: Binding<CGFloat> = .constant(159.0), heightProgressIndicator: Binding<CGFloat>, startY: Binding<CGFloat> = .constant(0)) {
         self._localPath = localPath
         self._minSpace = minSpace
         self._maxSpace = maxSpace
@@ -28,24 +30,34 @@ public struct VideoRangeSliderWrapper: UIViewRepresentable {
         
         self._endPosition = endPosition
 
-        if let url = URL(string: localPath.wrappedValue) {
-            let asset = AVAsset(url: url)
-            let duration = asset.duration
-            let durationTime = CMTimeGetSeconds(duration)
-            if endPosition.wrappedValue == 0
-            {
-                self._endPosition = Binding.constant(Float(durationTime))
-            }
+        let asset = AVAsset(url: URL(fileURLWithPath: localPath.wrappedValue))
+        let duration = asset.duration
+        let durationTime = CMTimeGetSeconds(duration)
+        
+        if endPosition.wrappedValue == 0
+        {
+            self._endPosition = Binding.constant(Float(durationTime))
         }
         
         self._actualPosition = actualPosition
+
+        if actualPosition.wrappedValue == -1
+        {
+            self._actualPosition = Binding.constant(Float(durationTime)/2)
+        }
+
+        self._width = width
         self._height = height
+        self._heightProgressIndicator = heightProgressIndicator
         self._startY = startY
     }
     
     public func makeUIView(context: Context) -> VideoRangeSlider {
         let videoRangeSlider: VideoRangeSlider = VideoRangeSlider()
 
+        // Correct indicator for SwiftUI
+        videoRangeSlider.reSetupIndicator(width: self.width, height: self.height, heightProgressIndicator: self.heightProgressIndicator, startY: self.startY)
+        
         // Set the video URL
         videoRangeSlider.setVideoURL(videoURL: URL(fileURLWithPath: self.localPath))
         
@@ -64,9 +76,9 @@ public struct VideoRangeSliderWrapper: UIViewRepresentable {
         // Set initial position of End Indicator
         videoRangeSlider.setEndPosition(seconds: self.endPosition)
         
-        // Correct indicator for SwiftUI
-        videoRangeSlider.reSetupIndicator(height: self.height, startY: self.startY)
-        
+        // Set actual position
+        videoRangeSlider.updateProgressIndicator(seconds: Float64(self.actualPosition))
+                
         return videoRangeSlider
     }
 
@@ -90,11 +102,13 @@ extension VideoRangeSliderWrapper {
         
         public func indicatorDidChangePosition(videoRangeSlider: VideoRangeSlider, position: Float64) {
             // Update parent var of actual position of progress indicator
+            print("uhm progres pos \(position)")
             self.parent.actualPosition = Float(position)
         }
         
         public func didChangeValue(videoRangeSlider: VideoRangeSlider, startTime: Float64, endTime: Float64) {
             // Update parent var of actual position of indicator (start and end)
+            print("uhm pos start \(startTime) end \(endTime)")
             self.parent.startPosition = Float(startTime)
             self.parent.endPosition = Float(endTime)
         }
