@@ -14,7 +14,7 @@ open class ABTimeView: UIView {
     
     public var timeLabel       = UILabel()
     public var backgroundView  = UIView() {
-        willSet(newBackgroundView){
+        willSet(newBackgroundView) {
             self.backgroundView.removeFromSuperview()
         }
         didSet {
@@ -37,9 +37,9 @@ open class ABTimeView: UIView {
         super.init(frame: frame)
     }
     
-    public init(size: CGSize, position: Int){
+    public init(size: CGSize, position: CGFloat) {
         let frame = CGRect(x: 0,
-                           y: -size.height - space,
+                           y: position,
                            width: size.width,
                            height: size.height)
         super.init(frame: frame)
@@ -54,14 +54,14 @@ open class ABTimeView: UIView {
         self.timeLabel.textAlignment = .center
         self.timeLabel.textColor = UIColor.lightGray
         self.addSubview(self.timeLabel)
-
     }
     
     open override func layoutSubviews() {
         super.layoutSubviews()
+        
         self.backgroundView.frame = self.bounds
-		let timeLabelFrameWidth = self.frame.width - (marginRight + marginLeft)
-		let timeLabelFrameHeight = self.frame.height - (marginBottom + marginTop)
+        let timeLabelFrameWidth = self.frame.width - (marginRight + marginLeft)
+        let timeLabelFrameHeight = self.frame.height - (marginBottom + marginTop)
         self.timeLabel.frame = CGRect(x: marginLeft,
                                       y: marginTop - self.timeLabel.bounds.height / 2,
                                       width: timeLabelFrameWidth,

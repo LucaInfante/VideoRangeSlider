@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import AVKit
 
 @objc public protocol VideoRangeSliderDelegate: class {
     func didChangeValue(videoRangeSlider: VideoRangeSlider, startTime: Float64, endTime: Float64)
@@ -81,7 +82,7 @@ public class VideoRangeSlider: UIView, UIGestureRecognizerDelegate {
 
     private func setup() {
         self.isUserInteractionEnabled = true
-
+        
         // Setup Start Indicator
         let startDrag = UIPanGestureRecognizer(target:self,
                                                action: #selector(startDragged(recognizer:)))
@@ -151,11 +152,11 @@ public class VideoRangeSlider: UIView, UIGestureRecognizerDelegate {
 
         // Setup time labels
                 
-        startTimeView = ABTimeView(size: CGSize(width: 60, height: 30), position: 1)
+        startTimeView = ABTimeView(size: CGSize(width: 60, height: 30), position: -38)
         startTimeView.layer.anchorPoint = CGPoint(x: 0.5, y: 0.5)
         self.addSubview(startTimeView)
 
-        endTimeView = ABTimeView(size: CGSize(width: 60, height: 30), position: 1)
+        endTimeView = ABTimeView(size: CGSize(width: 60, height: 30), position: -38)
         endTimeView.layer.anchorPoint = CGPoint(x: 0.5, y: 0.5)
         self.addSubview(endTimeView)
     }
@@ -167,19 +168,26 @@ public class VideoRangeSlider: UIView, UIGestureRecognizerDelegate {
     }
 
     // MARK: Public functions
-    public func setProgressIndicatorImage(image: UIImage){
+    public func getImageFromFrame(position: Float) -> UIImage
+    {
+        // Return image from selected frame
+        let image = ABVideoHelper.thumbnailFromVideo(videoUrl: self.videoURL, time: CMTimeMake(value: Int64(position), timescale: 1))
+        return image
+    }
+    
+    public func setProgressIndicatorImage(image: UIImage) {
         self.progressIndicator.imageView.image = image
     }
 
-    public func hideProgressIndicator(){
+    public func hideProgressIndicator() {
         self.progressIndicator.isHidden = true
     }
 
-    public func showProgressIndicator(){
+    public func showProgressIndicator() {
         self.progressIndicator.isHidden = false
     }
 
-    public func updateProgressIndicator(seconds: Float64){
+    public func updateProgressIndicator(seconds: Float64) {
         if !isReceivingGesture {
             let endSeconds = secondsFromValue(value: self.endPercentage)
             
@@ -214,10 +222,11 @@ public class VideoRangeSlider: UIView, UIGestureRecognizerDelegate {
     public func setTimeViewPosition(position: ABTimeViewPosition){
         switch position {
         case .top:
-
-            break
+            self.startTimeView.frame.origin = CGPoint(x: self.startTimeView.frame.origin.x, y: -self.startTimeView.frame.size.height - 8)
+            self.endTimeView.frame.origin = CGPoint(x: self.endTimeView.frame.origin.x, y: -self.endTimeView.frame.size.height - 8)
         case .bottom:
-
+            self.startTimeView.frame.origin = CGPoint(x: self.startTimeView.frame.origin.x, y: self.startTimeView.frame.size.height + self.startTimeView.frame.size.height/2 + 16)
+            self.endTimeView.frame.origin = CGPoint(x: self.endTimeView.frame.origin.x, y: self.endTimeView.frame.size.height + self.endTimeView.frame.size.height/2 + 16)
             break
         }
     }
@@ -306,12 +315,12 @@ public class VideoRangeSlider: UIView, UIGestureRecognizerDelegate {
 
         // Setup time labels
         startTimeView.removeFromSuperview()
-        startTimeView = ABTimeView(size: CGSize(width: 60, height: 30), position: 1)
+        startTimeView = ABTimeView(size: CGSize(width: 60, height: 30), position: -38)
         startTimeView.layer.anchorPoint = CGPoint(x: 0.5, y: 0.5)
         self.viewForSwiftUI.addSubview(startTimeView)
 
         endTimeView.removeFromSuperview()
-        endTimeView = ABTimeView(size: CGSize(width: 60, height: 30), position: 1)
+        endTimeView = ABTimeView(size: CGSize(width: 60, height: 30), position: -38)
         endTimeView.layer.anchorPoint = CGPoint(x: 0.5, y: 0.5)
         self.viewForSwiftUI.addSubview(endTimeView)
 

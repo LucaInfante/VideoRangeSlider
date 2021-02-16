@@ -21,8 +21,12 @@ public struct VideoRangeSliderWrapper: UIViewRepresentable {
     @Binding var height: CGFloat
     @Binding var heightProgressIndicator: CGFloat
     @Binding var startY: CGFloat
+    @Binding var imageFrame: Image?
+    var customStartEndTimeView: UIView? = nil
+    var fontStartEndTime: UIFont? = nil
+    var startEndTimeViewPositionTop = true
     
-    public init(localPath: Binding<String>, minSpace: Binding<Float>, maxSpace: Binding<Float>, startPosition: Binding<Float> = .constant(0), endPosition: Binding<Float> = .constant(0), actualPosition: Binding<Float> = .constant(-1), width: Binding<CGFloat>, height: Binding<CGFloat> = .constant(159.0), heightProgressIndicator: Binding<CGFloat>, startY: Binding<CGFloat> = .constant(0)) {
+    public init(localPath: Binding<String>, minSpace: Binding<Float>, maxSpace: Binding<Float>, startPosition: Binding<Float> = .constant(0), endPosition: Binding<Float> = .constant(0), actualPosition: Binding<Float> = .constant(-1), width: Binding<CGFloat>, height: Binding<CGFloat> = .constant(159.0), heightProgressIndicator: Binding<CGFloat>, startY: Binding<CGFloat> = .constant(0), imageFrame: Binding<Image?>, customStartEndTimeView: UIView?, fontStartEndTime: UIFont?, startEndTimeViewPositionTop: Bool?) {
         self._localPath = localPath
         self._minSpace = minSpace
         self._maxSpace = maxSpace
@@ -50,6 +54,15 @@ public struct VideoRangeSliderWrapper: UIViewRepresentable {
         self._height = height
         self._heightProgressIndicator = heightProgressIndicator
         self._startY = startY
+        self._imageFrame = imageFrame
+        
+        self.customStartEndTimeView = customStartEndTimeView
+        self.fontStartEndTime = fontStartEndTime
+        
+        if startEndTimeViewPositionTop != nil
+        {
+            self.startEndTimeViewPositionTop = startEndTimeViewPositionTop!
+        }
     }
     
     public func makeUIView(context: Context) -> VideoRangeSlider {
@@ -78,7 +91,28 @@ public struct VideoRangeSliderWrapper: UIViewRepresentable {
         
         // Set actual position
         videoRangeSlider.updateProgressIndicator(seconds: Float64(self.actualPosition))
+                        
+        // Customize start and end time view
+        if self.customStartEndTimeView != nil
+        {
+            videoRangeSlider.startTimeView.backgroundView = self.customStartEndTimeView!
+            videoRangeSlider.endTimeView.backgroundView = self.customStartEndTimeView!
+        }
+        
+        // Customize font end time if exist
+        if self.fontStartEndTime != nil
+        {
+            videoRangeSlider.startTimeView.timeLabel.font = self.fontStartEndTime
+            videoRangeSlider.endTimeView.timeLabel.font = self.fontStartEndTime
+        }
+        
+        videoRangeSlider.setTimeViewPosition(position: (self.startEndTimeViewPositionTop ? .top : .bottom))
                 
+        // Save image of frame (first frame)
+        DispatchQueue.main.async {
+            self.imageFrame = Image(uiImage: videoRangeSlider.getImageFromFrame(position: 0))
+        }
+        
         return videoRangeSlider
     }
 
@@ -102,13 +136,14 @@ extension VideoRangeSliderWrapper {
         
         public func indicatorDidChangePosition(videoRangeSlider: VideoRangeSlider, position: Float64) {
             // Update parent var of actual position of progress indicator
-            print("uhm progres pos \(position)")
             self.parent.actualPosition = Float(position)
+            
+            // Save image of frame
+            self.parent.imageFrame = Image(uiImage: videoRangeSlider.getImageFromFrame(position: Float(position)))
         }
         
         public func didChangeValue(videoRangeSlider: VideoRangeSlider, startTime: Float64, endTime: Float64) {
             // Update parent var of actual position of indicator (start and end)
-            print("uhm pos start \(startTime) end \(endTime)")
             self.parent.startPosition = Float(startTime)
             self.parent.endPosition = Float(endTime)
         }
