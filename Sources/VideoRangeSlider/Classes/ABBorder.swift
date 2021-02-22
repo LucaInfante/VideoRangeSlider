@@ -15,8 +15,8 @@ class ABBorder: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        let image = UIImage(named: "BorderLine")
-        
+        let image = UIImage(named: "BorderLine", in: .module, compatibleWith: nil)
+
         imageView.frame = self.bounds
         imageView.image = image
         imageView.contentMode = UIView.ContentMode.scaleToFill

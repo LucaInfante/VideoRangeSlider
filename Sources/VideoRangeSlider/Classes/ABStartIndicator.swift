@@ -16,8 +16,8 @@ class ABStartIndicator: UIView {
         super.init(frame: frame)
         self.isUserInteractionEnabled = true
         
-        let image = UIImage(named: "StartIndicator")
-        
+        let image = UIImage(named: "StartIndicator", in: .module, compatibleWith: nil)
+
         imageView.frame = self.bounds
         imageView.image = image
         imageView.contentMode = UIView.ContentMode.scaleToFill
