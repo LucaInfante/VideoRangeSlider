@@ -117,7 +117,8 @@ public struct VideoRangeSliderWrapper: UIViewRepresentable {
     }
 
     public func updateUIView(_ uiView: VideoRangeSlider, context: Context) {
-        //
+        // Set actual position
+        uiView.updateProgressIndicator(seconds: Float64(self.actualPosition))
     }
     
     public func makeCoordinator() -> VideoRangeSliderWrapper.Coordinator {
