@@ -6,8 +6,8 @@
 //
 
 import UIKit
-import AVKit
 import SwiftUI
+import AVKit
 
 @available(iOS 13.0, *)
 public struct VideoRangeSliderWrapper: UIViewRepresentable {
@@ -22,11 +22,11 @@ public struct VideoRangeSliderWrapper: UIViewRepresentable {
     @Binding var heightProgressIndicator: CGFloat
     @Binding var startY: CGFloat
     @Binding var imageFrame: Image?
-    var customStartEndTimeView: UIView? = nil
+    var customBackgroundStartEndTimeView: UIColor? = nil
     var fontStartEndTime: UIFont? = nil
     var startEndTimeViewPositionTop = true
     
-    public init(localPath: Binding<String>, minSpace: Binding<Float>, maxSpace: Binding<Float>, startPosition: Binding<Float> = .constant(0), endPosition: Binding<Float> = .constant(0), actualPosition: Binding<Float> = .constant(-1), width: Binding<CGFloat>, height: Binding<CGFloat> = .constant(159.0), heightProgressIndicator: Binding<CGFloat>, startY: Binding<CGFloat> = .constant(0), imageFrame: Binding<Image?>, customStartEndTimeView: UIView?, fontStartEndTime: UIFont?, startEndTimeViewPositionTop: Bool?) {
+    public init(localPath: Binding<String>, minSpace: Binding<Float>, maxSpace: Binding<Float>, startPosition: Binding<Float> = .constant(0), endPosition: Binding<Float> = .constant(0), actualPosition: Binding<Float> = .constant(-1), width: Binding<CGFloat>, height: Binding<CGFloat> = .constant(159.0), heightProgressIndicator: Binding<CGFloat>, startY: Binding<CGFloat> = .constant(0), imageFrame: Binding<Image?>, customBackgroundStartEndTimeView: UIColor?, fontStartEndTime: UIFont?, startEndTimeViewPositionTop: Bool?) {
         self._localPath = localPath
         self._minSpace = minSpace
         self._maxSpace = maxSpace
@@ -56,7 +56,7 @@ public struct VideoRangeSliderWrapper: UIViewRepresentable {
         self._startY = startY
         self._imageFrame = imageFrame
         
-        self.customStartEndTimeView = customStartEndTimeView
+        self.customBackgroundStartEndTimeView = customBackgroundStartEndTimeView
         self.fontStartEndTime = fontStartEndTime
         
         if startEndTimeViewPositionTop != nil
@@ -93,10 +93,10 @@ public struct VideoRangeSliderWrapper: UIViewRepresentable {
         videoRangeSlider.updateProgressIndicator(seconds: Float64(self.actualPosition))
                         
         // Customize start and end time view
-        if self.customStartEndTimeView != nil
+        if self.customBackgroundStartEndTimeView != nil
         {
-            videoRangeSlider.startTimeView.backgroundView = self.customStartEndTimeView!
-            videoRangeSlider.endTimeView.backgroundView = self.customStartEndTimeView!
+            videoRangeSlider.startTimeView.backgroundView.backgroundColor = self.customBackgroundStartEndTimeView!
+            videoRangeSlider.endTimeView.backgroundView.backgroundColor = self.customBackgroundStartEndTimeView!
         }
         
         // Customize font end time if exist
