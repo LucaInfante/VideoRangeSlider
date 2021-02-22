@@ -15,7 +15,7 @@ class ABProgressIndicator: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        let image = UIImage(named: "ProgressIndicator")
+        let image = UIImage(named: "ProgressIndicator", in: .module, compatibleWith: nil)
         imageView.frame = self.bounds
         imageView.image = image
         imageView.contentMode = UIView.ContentMode.scaleToFill
