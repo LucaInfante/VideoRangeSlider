@@ -15,8 +15,7 @@ class ABBorder: UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         
-        let bundle = Bundle(for: ABStartIndicator.self)
-        let image = UIImage(named: "BorderLine", in: bundle, compatibleWith: nil)
+        let image = UIImage(named: "BorderLine")
         
         imageView.frame = self.bounds
         imageView.image = image
