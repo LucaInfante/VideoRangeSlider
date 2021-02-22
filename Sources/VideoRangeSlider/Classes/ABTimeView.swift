@@ -52,7 +52,7 @@ open class ABTimeView: UIView {
         // Add time label
         self.timeLabel = UILabel()
         self.timeLabel.textAlignment = .center
-        self.timeLabel.textColor = UIColor.lightGray
+        self.timeLabel.textColor = UIColor.white
         self.addSubview(self.timeLabel)
     }
     

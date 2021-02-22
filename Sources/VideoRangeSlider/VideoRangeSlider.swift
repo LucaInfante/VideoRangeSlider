@@ -237,8 +237,8 @@ public class VideoRangeSlider: UIView, UIGestureRecognizerDelegate {
             self.startTimeView.frame.origin = CGPoint(x: self.startTimeView.frame.origin.x, y: -self.startTimeView.frame.size.height - 8)
             self.endTimeView.frame.origin = CGPoint(x: self.endTimeView.frame.origin.x, y: -self.endTimeView.frame.size.height - 8)
         case .bottom:
-            self.startTimeView.frame.origin = CGPoint(x: self.startTimeView.frame.origin.x, y: self.startTimeView.frame.size.height + 16 + self.startTimeView.timeLabel.text!.height(constraintedWidth: self.startTimeView.timeLabel.frame.size.width, font: self.startTimeView.timeLabel.font))
-            self.endTimeView.frame.origin = CGPoint(x: self.endTimeView.frame.origin.x, y: self.endTimeView.frame.size.height + 16 + self.endTimeView.timeLabel.text!.height(constraintedWidth: self.endTimeView.timeLabel.frame.size.width, font: self.endTimeView.timeLabel.font))
+            self.startTimeView.frame.origin = CGPoint(x: self.startTimeView.frame.origin.x, y: self.startTimeView.frame.size.height + 12 + self.startTimeView.timeLabel.text!.height(constraintedWidth: self.startTimeView.timeLabel.frame.size.width, font: self.startTimeView.timeLabel.font))
+            self.endTimeView.frame.origin = CGPoint(x: self.endTimeView.frame.origin.x, y: self.endTimeView.frame.size.height + 12 + self.endTimeView.timeLabel.text!.height(constraintedWidth: self.endTimeView.timeLabel.frame.size.width, font: self.endTimeView.timeLabel.font))
         }
     }
 
@@ -618,8 +618,8 @@ public class VideoRangeSlider: UIView, UIGestureRecognizerDelegate {
     override public func layoutSubviews() {
         super.layoutSubviews()
 
-        startTimeView.timeLabel.text = self.secondsToFormattedString(totalSeconds: secondsFromValue(value: self.startPercentage))
-        endTimeView.timeLabel.text = self.secondsToFormattedString(totalSeconds: secondsFromValue(value: self.endPercentage))
+        startTimeView.timeLabel.text = "\(self.secondsToFormattedString(totalSeconds: secondsFromValue(value: self.startPercentage)))s"
+        endTimeView.timeLabel.text = "\(self.secondsToFormattedString(totalSeconds: secondsFromValue(value: self.endPercentage)))s"
 
         let startPosition = positionFromValue(value: self.startPercentage)
         let endPosition = positionFromValue(value: self.endPercentage)

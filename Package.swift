@@ -23,11 +23,7 @@ let package = Package(
         // Targets can depend on other targets in this package, and on products in packages this package depends on.
         .target(
             name: "VideoRangeSlider",
-            dependencies: [], resources: [
-                .process("BorderLine.png"),
-                .process("EndIndicator.png"),
-                .process("ProgressIndicator.png"),
-                .process("StartIndicator.png")]),
+            dependencies: []),
         .testTarget(
             name: "VideoRangeSliderTests",
             dependencies: ["VideoRangeSlider"]),
