@@ -9,6 +9,7 @@ import UIKit
 import SwiftUI
 import AVKit
 
+#if arch(arm64)
 @available(iOS 13.0, *)
 public struct VideoRangeSliderWrapper: UIViewRepresentable {
     @Binding var localPath: String
@@ -166,3 +167,4 @@ extension VideoRangeSliderWrapper {
         }
     }
 }
+#endif
