@@ -8,6 +8,18 @@
 import UIKit
 import AVKit
 
+extension String {
+    func height(constraintedWidth width: CGFloat, font: UIFont) -> CGFloat {
+        let label =  UILabel(frame: CGRect(x: 0, y: 0, width: width, height: .greatestFiniteMagnitude))
+        label.numberOfLines = 0
+        label.text = self
+        label.font = font
+        label.sizeToFit()
+        
+        return label.frame.height
+    }
+}
+
 @objc public protocol VideoRangeSliderDelegate: class {
     func didChangeValue(videoRangeSlider: VideoRangeSlider, startTime: Float64, endTime: Float64)
     func indicatorDidChangePosition(videoRangeSlider: VideoRangeSlider, position: Float64)
@@ -225,9 +237,8 @@ public class VideoRangeSlider: UIView, UIGestureRecognizerDelegate {
             self.startTimeView.frame.origin = CGPoint(x: self.startTimeView.frame.origin.x, y: -self.startTimeView.frame.size.height - 8)
             self.endTimeView.frame.origin = CGPoint(x: self.endTimeView.frame.origin.x, y: -self.endTimeView.frame.size.height - 8)
         case .bottom:
-            self.startTimeView.frame.origin = CGPoint(x: self.startTimeView.frame.origin.x, y: self.startTimeView.frame.size.height + self.startTimeView.frame.size.height/2 + 16)
-            self.endTimeView.frame.origin = CGPoint(x: self.endTimeView.frame.origin.x, y: self.endTimeView.frame.size.height + self.endTimeView.frame.size.height/2 + 16)
-            break
+            self.startTimeView.frame.origin = CGPoint(x: self.startTimeView.frame.origin.x, y: self.startTimeView.frame.size.height + 16 + self.startTimeView.timeLabel.text!.height(constraintedWidth: self.startTimeView.timeLabel.frame.size.width, font: self.startTimeView.timeLabel.font))
+            self.endTimeView.frame.origin = CGPoint(x: self.endTimeView.frame.origin.x, y: self.endTimeView.frame.size.height + 16 + self.endTimeView.timeLabel.text!.height(constraintedWidth: self.endTimeView.timeLabel.frame.size.width, font: self.endTimeView.timeLabel.font))
         }
     }
 
@@ -402,16 +413,18 @@ public class VideoRangeSlider: UIView, UIGestureRecognizerDelegate {
             self.endPercentage = percentage
         }
         
-        if drag == .start {
+        // TODO: To do change
+        progressPosition = positionFromValue(value: self.startPercentage + (self.endPercentage - self.startPercentage)/2)
+        
+/*        if drag == .start {
             progressPosition = positionFromValue(value: self.startPercentage)
-            
         } else {
             if recognizer.state != .ended {
                 progressPosition = positionFromValue(value: self.endPercentage)
             } else {
                 progressPosition = positionFromValue(value: self.startPercentage)
             }
-        }
+        }*/
                 
         progressIndicator.center = CGPoint(x: progressPosition , y: progressIndicator.center.y)
         let progressPercentage = progressIndicator.center.x * 100 / self.frame.width
