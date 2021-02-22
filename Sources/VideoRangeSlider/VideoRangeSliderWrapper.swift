@@ -107,8 +107,11 @@ public struct VideoRangeSliderWrapper: UIViewRepresentable {
         {
             DispatchQueue.main.async {
                 // If min space < 1 change
-                self.minSpace = 1.0
-                uiView.minSpace = self.minSpace
+                if self.minSpace < 1.0
+                {
+                    self.minSpace = 1.0
+                    uiView.minSpace = self.minSpace
+                }
                 
                 // Update end and actual position
                 let asset = AVAsset(url: URL(fileURLWithPath: self.localPath))
