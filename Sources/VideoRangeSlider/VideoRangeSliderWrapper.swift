@@ -32,23 +32,8 @@ public struct VideoRangeSliderWrapper: UIViewRepresentable {
         self._maxSpace = maxSpace
         self._startPosition = startPosition
         
-        self._endPosition = endPosition
-
-        let asset = AVAsset(url: URL(fileURLWithPath: localPath.wrappedValue))
-        let duration = asset.duration
-        let durationTime = CMTimeGetSeconds(duration)
-        
-        if endPosition.wrappedValue == 0
-        {
-            self._endPosition = Binding.constant(Float(durationTime))
-        }
-        
         self._actualPosition = actualPosition
-
-        if actualPosition.wrappedValue == 0
-        {
-            self._actualPosition = Binding.constant(Float(durationTime)/2)
-        }
+        self._endPosition = endPosition
 
         self._width = width
         self._height = height
@@ -112,6 +97,14 @@ public struct VideoRangeSliderWrapper: UIViewRepresentable {
         DispatchQueue.main.async {
             self.imageFrame = Image(uiImage: videoRangeSlider.getImageFromFrame(position: 0))
         }
+        
+        // Update end and actual position
+        let asset = AVAsset(url: URL(fileURLWithPath: self.localPath))
+        let duration = asset.duration
+        let durationTime = CMTimeGetSeconds(duration)
+        
+        self.endPosition = Float(durationTime)
+        self.actualPosition = Float(durationTime)/2
         
         return videoRangeSlider
     }

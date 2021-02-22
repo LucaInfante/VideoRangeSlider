@@ -405,7 +405,7 @@ public class VideoRangeSlider: UIView, UIGestureRecognizerDelegate {
         
         self.delegate?.didChangeValue(videoRangeSlider: self, startTime: startSeconds, endTime: endSeconds)
         
-        var progressPosition: CGFloat = 0.0
+        var progressPosition: CGFloat = 0.0 + (self.flagSwiftUI ? 20 : 0)
         
         if drag == .start {
             self.startPercentage = percentage
@@ -413,18 +413,15 @@ public class VideoRangeSlider: UIView, UIGestureRecognizerDelegate {
             self.endPercentage = percentage
         }
         
-        // TODO: To do change
-        progressPosition = positionFromValue(value: self.startPercentage + (self.endPercentage - self.startPercentage)/2)
-        
-/*        if drag == .start {
-            progressPosition = positionFromValue(value: self.startPercentage)
+        if drag == .start {
+            progressPosition = positionFromValue(value: self.startPercentage) + (self.flagSwiftUI ? 20 : 0)
         } else {
             if recognizer.state != .ended {
                 progressPosition = positionFromValue(value: self.endPercentage)
             } else {
-                progressPosition = positionFromValue(value: self.startPercentage)
+                progressPosition = positionFromValue(value: self.startPercentage) + (self.flagSwiftUI ? 20 : 0)
             }
-        }*/
+        }
                 
         progressIndicator.center = CGPoint(x: progressPosition , y: progressIndicator.center.y)
         let progressPercentage = progressIndicator.center.x * 100 / self.frame.width
@@ -482,7 +479,7 @@ public class VideoRangeSlider: UIView, UIGestureRecognizerDelegate {
         
         let translation = recognizer.translation(in: self)
 
-        var progressPosition = positionFromValue(value: self.progressPercentage)
+        var progressPosition = positionFromValue(value: self.progressPercentage) + (self.flagSwiftUI ? 20 : 0)
         var startPosition = positionFromValue(value: self.startPercentage)
         var endPosition = positionFromValue(value: self.endPercentage)
 
@@ -623,7 +620,7 @@ public class VideoRangeSlider: UIView, UIGestureRecognizerDelegate {
 
         let startPosition = positionFromValue(value: self.startPercentage)
         let endPosition = positionFromValue(value: self.endPercentage)
-        let progressPosition = positionFromValue(value: self.progressPercentage)
+        let progressPosition = positionFromValue(value: self.progressPercentage) + (self.flagSwiftUI ? 20 : 0)
 
         startIndicator.center = CGPoint(x: startPosition, y: startIndicator.center.y)
         endIndicator.center = CGPoint(x: endPosition, y: endIndicator.center.y)
