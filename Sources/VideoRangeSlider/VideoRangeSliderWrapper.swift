@@ -26,7 +26,7 @@ public struct VideoRangeSliderWrapper: UIViewRepresentable {
     var fontStartEndTime: UIFont? = nil
     var startEndTimeViewPositionTop = true
     
-    public init(localPath: Binding<String>, minSpace: Binding<Float>, maxSpace: Binding<Float>, startPosition: Binding<Float> = .constant(0), endPosition: Binding<Float> = .constant(0), actualPosition: Binding<Float> = .constant(0), width: Binding<CGFloat>, height: Binding<CGFloat> = .constant(159.0), heightProgressIndicator: Binding<CGFloat>, startY: Binding<CGFloat> = .constant(0), imageFrame: Binding<Image?>, customBackgroundStartEndTimeView: UIColor?, fontStartEndTime: UIFont?, startEndTimeViewPositionTop: Bool?) {
+    public init(localPath: Binding<String>, minSpace: Binding<Float>, maxSpace: Binding<Float>, startPosition: Binding<Float>, endPosition: Binding<Float>, actualPosition: Binding<Float>, width: Binding<CGFloat>, height: Binding<CGFloat> = .constant(159.0), heightProgressIndicator: Binding<CGFloat>, startY: Binding<CGFloat> = .constant(0), imageFrame: Binding<Image?>, customBackgroundStartEndTimeView: UIColor?, fontStartEndTime: UIFont?, startEndTimeViewPositionTop: Bool?) {
         self._localPath = localPath
         self._minSpace = minSpace
         self._maxSpace = maxSpace
@@ -76,7 +76,7 @@ public struct VideoRangeSliderWrapper: UIViewRepresentable {
         
         // Set actual position
         videoRangeSlider.updateProgressIndicator(seconds: Float64(self.actualPosition))
-                        
+            
         // Customize start and end time view
         if self.customBackgroundStartEndTimeView != nil
         {
@@ -92,26 +92,44 @@ public struct VideoRangeSliderWrapper: UIViewRepresentable {
         }
         
         videoRangeSlider.setTimeViewPosition(position: (self.startEndTimeViewPositionTop ? .top : .bottom))
-                
+            
         // Save image of frame (first frame)
         DispatchQueue.main.async {
             self.imageFrame = Image(uiImage: videoRangeSlider.getImageFromFrame(position: 0))
         }
         
-        // Update end and actual position
-        let asset = AVAsset(url: URL(fileURLWithPath: self.localPath))
-        let duration = asset.duration
-        let durationTime = CMTimeGetSeconds(duration)
-        
-        self.endPosition = Float(durationTime)
-        self.actualPosition = Float(durationTime)/2
-        
         return videoRangeSlider
     }
 
     public func updateUIView(_ uiView: VideoRangeSlider, context: Context) {
-        // Set actual position
-        uiView.updateProgressIndicator(seconds: Float64(self.actualPosition))
+        // Update end only if not setted
+        if self.endPosition == 0
+        {
+            DispatchQueue.main.async {
+                // If min space < 1 change
+                self.minSpace = 1.0
+                uiView.minSpace = self.minSpace
+                
+                // Update end and actual position
+                let asset = AVAsset(url: URL(fileURLWithPath: self.localPath))
+                let duration = asset.duration
+                let durationTime = CMTimeGetSeconds(duration)
+                
+                self.endPosition = Float(durationTime)
+                self.actualPosition = Float(durationTime)/2
+                
+                // Set initial position of End Indicator
+                uiView.setEndPosition(seconds: self.endPosition)
+                
+                // Set actual position
+                uiView.updateProgressIndicator(seconds: Float64(self.actualPosition))
+            }
+        }
+        else
+        {
+            // Set actual position
+            uiView.updateProgressIndicator(seconds: Float64(self.actualPosition))
+        }
     }
     
     public func makeCoordinator() -> VideoRangeSliderWrapper.Coordinator {
@@ -129,11 +147,13 @@ extension VideoRangeSliderWrapper {
         }
         
         public func indicatorDidChangePosition(videoRangeSlider: VideoRangeSlider, position: Float64) {
-            // Update parent var of actual position of progress indicator
-            self.parent.actualPosition = Float(position)
-            
             // Save image of frame
-            self.parent.imageFrame = Image(uiImage: videoRangeSlider.getImageFromFrame(position: Float(position)))
+            DispatchQueue.main.async {
+                // Update parent var of actual position of progress indicator
+                self.parent.actualPosition = Float(position)
+
+                self.parent.imageFrame = Image(uiImage: videoRangeSlider.getImageFromFrame(position: Float(position)))
+            }
         }
         
         public func didChangeValue(videoRangeSlider: VideoRangeSlider, startTime: Float64, endTime: Float64) {
