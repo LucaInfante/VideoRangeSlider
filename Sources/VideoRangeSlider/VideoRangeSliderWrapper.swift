@@ -26,7 +26,7 @@ public struct VideoRangeSliderWrapper: UIViewRepresentable {
     var fontStartEndTime: UIFont? = nil
     var startEndTimeViewPositionTop = true
     
-    public init(localPath: Binding<String>, minSpace: Binding<Float>, maxSpace: Binding<Float>, startPosition: Binding<Float> = .constant(0), endPosition: Binding<Float> = .constant(0), actualPosition: Binding<Float> = .constant(-1), width: Binding<CGFloat>, height: Binding<CGFloat> = .constant(159.0), heightProgressIndicator: Binding<CGFloat>, startY: Binding<CGFloat> = .constant(0), imageFrame: Binding<Image?>, customBackgroundStartEndTimeView: UIColor?, fontStartEndTime: UIFont?, startEndTimeViewPositionTop: Bool?) {
+    public init(localPath: Binding<String>, minSpace: Binding<Float>, maxSpace: Binding<Float>, startPosition: Binding<Float> = .constant(0), endPosition: Binding<Float> = .constant(0), actualPosition: Binding<Float> = .constant(0), width: Binding<CGFloat>, height: Binding<CGFloat> = .constant(159.0), heightProgressIndicator: Binding<CGFloat>, startY: Binding<CGFloat> = .constant(0), imageFrame: Binding<Image?>, customBackgroundStartEndTimeView: UIColor?, fontStartEndTime: UIFont?, startEndTimeViewPositionTop: Bool?) {
         self._localPath = localPath
         self._minSpace = minSpace
         self._maxSpace = maxSpace
@@ -45,7 +45,7 @@ public struct VideoRangeSliderWrapper: UIViewRepresentable {
         
         self._actualPosition = actualPosition
 
-        if actualPosition.wrappedValue == -1
+        if actualPosition.wrappedValue == 0
         {
             self._actualPosition = Binding.constant(Float(durationTime)/2)
         }
